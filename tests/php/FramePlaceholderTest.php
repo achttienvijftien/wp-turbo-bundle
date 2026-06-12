@@ -7,21 +7,17 @@ use WP_UnitTestCase;
 
 /**
  * Covers the PHP-side placeholder helper: markup shape, attribute escaping
- * and reservation, and the runtime script enqueue side effect.
+ * and reservation, and the wp_turbo/frame_placeholder runtime contract.
  */
 class FramePlaceholderTest extends WP_UnitTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
 
-		// $wp_scripts persists across tests, so each test starts from a clean registry and queue.
-		unset( $GLOBALS['wp_scripts'] );
-	}
-
-	public function tear_down(): void {
-		unset( $GLOBALS['wp_scripts'] );
-
-		parent::tear_down();
+		// Simulates an installed runtime carrier (achttienvijftien/wp-turbo,
+		// or a theme bundle): without any listener the helper raises
+		// _doing_it_wrong, which would fail every test here.
+		add_action( 'wp_turbo/frame_placeholder', '__return_null' );
 	}
 
 	private function placeholder(): FramePlaceholder {
@@ -80,26 +76,32 @@ class FramePlaceholderTest extends WP_UnitTestCase {
 		self::assertSame( 1, substr_count( $html, 'loading=' ) );
 	}
 
-	public function test_lazy_enqueues_the_runtime_script(): void {
-		// Registered here as the achttienvijftien/wp-turbo mu-plugin would; WP only reports 'enqueued' for registered handles.
-		wp_register_script( 'wp-turbo-runtime', 'https://example.test/turbo.js', [], '1.0.0', true );
+	public function test_placeholders_announce_themselves_to_the_runtime_carrier(): void {
+		$announced = [];
 
-		self::assertFalse( wp_script_is( 'wp-turbo-runtime', 'enqueued' ) );
+		add_action(
+			'wp_turbo/frame_placeholder',
+			static function ( string $frame_id ) use ( &$announced ): void {
+				$announced[] = $frame_id;
+			}
+		);
 
 		$this->placeholder()->lazy( 'latest-news', 'turbo_hello', [ 'name' => 'x' ] );
+		$this->placeholder()->eager( 'author-footer', 'turbo_hello', [ 'name' => 'y' ] );
 
-		self::assertTrue( wp_script_is( 'wp-turbo-runtime', 'enqueued' ) );
+		self::assertSame( [ 'latest-news', 'author-footer' ], $announced );
 	}
 
-	public function test_lazy_without_the_mu_plugin_parks_the_enqueue_harmlessly(): void {
-		$this->placeholder()->lazy( 'latest-news', 'turbo_hello', [ 'name' => 'x' ] );
+	public function test_a_missing_runtime_carrier_raises_doing_it_wrong(): void {
+		remove_action( 'wp_turbo/frame_placeholder', '__return_null' );
 
-		// Unregistered handle: WP parks the enqueue, so nothing would print.
-		self::assertFalse( wp_script_is( 'wp-turbo-runtime', 'enqueued' ) );
+		$this->setExpectedIncorrectUsage(
+			'AchttienVijftien\Bundle\WpTurboBundle\Frame\FramePlaceholder::placeholder'
+		);
 
-		// A later registration (the mu-plugin loading) promotes the parked enqueue.
-		wp_register_script( 'wp-turbo-runtime', 'https://example.test/turbo.js', [], '1.0.0', true );
+		$html = $this->placeholder()->lazy( 'latest-news', 'turbo_hello', [ 'name' => 'x' ] );
 
-		self::assertTrue( wp_script_is( 'wp-turbo-runtime', 'enqueued' ) );
+		// The placeholder still renders; only the runtime is missing.
+		self::assertStringContainsString( '<turbo-frame', $html );
 	}
 }

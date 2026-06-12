@@ -78,8 +78,19 @@ class FramePlaceholder {
 	 * @return string
 	 */
 	private function placeholder( string $loading, string $frame_id, string $route, array $params, array $attributes ): string {
-		// Handle registered by the achttienvijftien/wp-turbo mu-plugin; when that is absent WP parks the enqueue of the unregistered handle, a harmless no-op.
-		wp_enqueue_script( 'wp-turbo-runtime' );
+		// The runtime carrier is replaceable (the achttienvijftien/wp-turbo
+		// mu-plugin is the default, a theme bundle may take over later), so
+		// this package carries no script knowledge: whoever owns the Turbo
+		// runtime listens to this action and enqueues its own script.
+		if ( ! has_action( 'wp_turbo/frame_placeholder' ) ) {
+			_doing_it_wrong(
+				__METHOD__,
+				'A Turbo Frame placeholder was rendered but nothing is listening to wp_turbo/frame_placeholder, so no Turbo runtime will be enqueued and the frame will never load. Install achttienvijftien/wp-turbo or register your own runtime listener.',
+				'0.1.0'
+			);
+		}
+
+		do_action( 'wp_turbo/frame_placeholder', $frame_id );
 
 		$extra = '';
 

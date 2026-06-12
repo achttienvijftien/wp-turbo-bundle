@@ -80,6 +80,14 @@ space: an empty frame is a 0x0 inline element that never triggers
 visibility-based loading. Give it fallback content (a skeleton) or CSS
 dimensions first; use `eager()` otherwise.
 
+This bundle ships no JavaScript. Placeholders fire
+`wp_turbo/frame_placeholder` (with the frame id), and whoever owns the Turbo
+runtime listens and enqueues its own script: the `achttienvijftien/wp-turbo`
+mu-plugin is the default carrier (composer `suggest`), a theme bundle can
+take over by registering its own listener. When a placeholder renders with
+no listener at all, the helper raises `_doing_it_wrong()` so the broken
+setup is loud instead of a frame that never loads.
+
 Twig render sites author the native component, with `path()`/`url()`
 provided through the `UrlGeneratorInterface` contract this bundle fulfills
 (wp-twig-bundle registers the Twig functions when the contract is present):

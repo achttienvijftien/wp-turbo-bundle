@@ -48,5 +48,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "suggest": {
+        "achttienvijftien/wp-turbo": "Default Turbo runtime carrier: serves the JS and listens to wp_turbo/frame_placeholder"
     }
 }

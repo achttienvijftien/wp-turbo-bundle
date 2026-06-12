@@ -116,13 +116,14 @@ class Dispatcher {
 
 			// The invocation convention (see TurboControllerInterface):
 			// matched path placeholders win over same-named query
-			// parameters — and the context must see exactly the same
+			// parameters — and the contexts must see exactly the same
 			// parameters the controller will receive.
 			$params = $route['params'] + $query_params;
 
-			$this->services
-				->get( $route['context'] ?? NullContext::class )
-				->setup( $params );
+			// Contexts run in declaration order; none declared = NullContext.
+			foreach ( $route['contexts'] ?: [ NullContext::class ] as $context ) {
+				$this->services->get( $context )->setup( $params );
+			}
 		} catch ( NotFoundException ) {
 			return new Response(
 				'Not found.',

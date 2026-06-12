@@ -48,9 +48,9 @@ class ControllerPass implements CompilerPassInterface {
 			$definition = $container->getDefinition( $id );
 			$class      = $container->getParameterBag()->resolveValue( $definition->getClass() );
 
-			$route   = $this->read_route( $class );
-			$context = $this->read_context( $class );
-			$name    = $route->getName();
+			$route    = $this->read_route( $class );
+			$contexts = $this->read_contexts( $class );
+			$name     = $route->getName();
 
 			if ( isset( $routes[ $name ] ) ) {
 				throw new \InvalidArgumentException(
@@ -64,10 +64,10 @@ class ControllerPass implements CompilerPassInterface {
 			}
 
 			$routes[ $name ] = [
-				'path'    => $route->getPath(),
-				'methods' => $route->getMethods(),
-				'service' => $class,
-				'context' => $context,
+				'path'     => $route->getPath(),
+				'methods'  => $route->getMethods(),
+				'service'  => $class,
+				'contexts' => $contexts,
 			];
 
 			// Key by class: that is what the route table stores, and for
@@ -83,7 +83,7 @@ class ControllerPass implements CompilerPassInterface {
 
 		// The Dispatcher resolves contexts by class too; NullContext is the
 		// default for routes without #[WithFrameContext].
-		$contexts = array_unique( array_filter( array_column( $routes, 'context' ) ) );
+		$contexts = array_unique( array_merge( ...array_column( $routes, 'contexts' ), ...[ [] ] ) );
 
 		foreach ( [ NullContext::class, ...$contexts ] as $context_class ) {
 			$services[ $context_class ] = new Reference( $context_class );
@@ -157,15 +157,17 @@ class ControllerPass implements CompilerPassInterface {
 	}
 
 	/**
-	 * Reads the controller's optional #[WithFrameContext] attribute.
+	 * Reads the controller's optional, repeatable #[WithFrameContext] attributes.
 	 *
 	 * @param string $class The controller class name.
 	 *
-	 * @return string|null The FrameContext class name, or null for the NullContext default.
+	 * @return string[] The FrameContext class names in declaration order; empty
+	 *                  means the NullContext default.
 	 */
-	private function read_context( string $class ): ?string {
-		$attributes = ( new \ReflectionClass( $class ) )->getAttributes( WithFrameContext::class );
-
-		return $attributes ? $attributes[0]->newInstance()->context_class : null;
+	private function read_contexts( string $class ): array {
+		return array_map(
+			static fn ( \ReflectionAttribute $attribute ): string => $attribute->newInstance()->context_class,
+			( new \ReflectionClass( $class ) )->getAttributes( WithFrameContext::class )
+		);
 	}
 }

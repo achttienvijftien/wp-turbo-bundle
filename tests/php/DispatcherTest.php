@@ -130,13 +130,30 @@ class DispatcherTest extends WP_UnitTestCase {
 		$path_post_id  = self::factory()->post->create( [ 'post_status' => 'publish' ] );
 		$query_post_id = self::factory()->post->create( [ 'post_status' => 'publish' ] );
 
+		update_option( 'sidebars_widgets', [ 'sidebar-test' => [ 'hello_widget-1' ] ] );
+
 		$response = $this->dispatcher()->handle(
 			'/_turbo/hello-post/' . $path_post_id,
-			[ 'post_id' => $query_post_id ]
+			[
+				'post_id'   => $query_post_id,
+				'widget_id' => 'hello_widget-1',
+			]
 		);
 
 		self::assertSame( 200, $response->get_status() );
-		self::assertSame( "context=$path_post_id param=$path_post_id", $response->get_body() );
+		self::assertSame( "context=$path_post_id param=$path_post_id widget=hello_widget-1", $response->get_body() );
+	}
+
+	public function test_declared_contexts_all_run_so_a_missing_widget_is_a_404(): void {
+		$post_id = self::factory()->post->create( [ 'post_status' => 'publish' ] );
+
+		// CurrentPost (first context) passes; CurrentWidget (second) must 404.
+		$response = $this->dispatcher()->handle(
+			'/_turbo/hello-post/' . $post_id,
+			[ 'widget_id' => 'not-placed-anywhere-9' ]
+		);
+
+		self::assertSame( 404, $response->get_status() );
 	}
 
 	public function test_is_turbo_request_accepts_paths_inside_the_namespace(): void {

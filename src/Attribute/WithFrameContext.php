@@ -9,11 +9,13 @@ namespace AchttienVijftien\Bundle\WpTurboBundle\Attribute;
 
 /**
  * Declares which FrameContext service the dispatcher runs before invoking
- * the controller. When absent, the dispatcher defaults to NullContext.
+ * the controller. Repeatable: multiple declarations run in declaration
+ * order (e.g. CurrentPost plus CurrentWidget). When absent, the dispatcher
+ * defaults to NullContext.
  *
  * @package AchttienVijftien\Bundle\WpTurboBundle
  */
-#[\Attribute( \Attribute::TARGET_CLASS )]
+#[\Attribute( \Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE )]
 class WithFrameContext {
 
 	/**

@@ -24,7 +24,7 @@ class RouteRegistryTest extends WP_UnitTestCase {
 		self::assertSame( 'turbo_hello', $match['name'] );
 		self::assertSame( [ 'name' => 'world' ], $match['params'] );
 		self::assertSame( HelloController::class, $match['service'] );
-		self::assertSame( CurrentPost::class, $match['context'] );
+		self::assertSame( [ CurrentPost::class ], $match['contexts'] );
 	}
 
 	public function test_match_throws_not_found_for_unknown_path(): void {

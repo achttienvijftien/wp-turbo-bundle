@@ -34,6 +34,8 @@ services:
 
   AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentPost: ~
 
+  AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentWidget: ~
+
   # The route table parameter is built by Compiler\ControllerPass.
   AchttienVijftien\Bundle\WpTurboBundle\Routing\RouteRegistry:
     arguments: ['%wp_turbo.routes%']

@@ -45,7 +45,7 @@ class RouteRegistry {
 	 * RouteRegistry constructor.
 	 *
 	 * @param array $routes The wp_turbo.routes parameter: route name =>
-	 *                      [ 'path', 'methods', 'service', 'context' ].
+	 *                      [ 'path', 'methods', 'service', 'contexts' ].
 	 */
 	public function __construct( private readonly array $routes ) {
 	}
@@ -56,7 +56,7 @@ class RouteRegistry {
 	 * @param string $path   The path to match, including the /_turbo/ prefix.
 	 * @param string $method The HTTP request method, enforced against the route's `methods`.
 	 *
-	 * @return array{name: string, params: array, service: string, context: string|null}
+	 * @return array{name: string, params: array, service: string, contexts: string[]}
 	 * @throws NotFoundException When no route matches the path and method.
 	 */
 	public function match( string $path, string $method = 'GET' ): array {
@@ -78,7 +78,7 @@ class RouteRegistry {
 			'name'    => $name,
 			'params'  => $matched,
 			'service' => $this->routes[ $name ]['service'],
-			'context' => $this->routes[ $name ]['context'],
+			'contexts' => $this->routes[ $name ]['contexts'],
 		];
 	}
 
@@ -110,7 +110,7 @@ class RouteRegistry {
 	}
 
 	/**
-	 * Builds the RouteCollection once; per-route metadata (service, context)
+	 * Builds the RouteCollection once; per-route metadata (service, contexts)
 	 * stays in $routes, keyed by the same names.
 	 *
 	 * @return RouteCollection

@@ -4,6 +4,7 @@ namespace AchttienVijftien\Bundle\WpTurboBundle\Test\Support;
 
 use AchttienVijftien\Bundle\WpTurboBundle\Attribute\WithFrameContext;
 use AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentPost;
+use AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentWidget;
 use AchttienVijftien\Bundle\WpTurboBundle\Http\Response;
 use AchttienVijftien\Bundle\WpTurboBundle\Http\TurboFrame;
 use AchttienVijftien\Bundle\WpTurboBundle\Routing\TurboControllerInterface;
@@ -21,11 +22,15 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 #[Route( '/_turbo/hello-post/{post_id}', name: 'turbo_hello_post', methods: [ 'GET' ] )]
 #[WithFrameContext( CurrentPost::class )]
+#[WithFrameContext( CurrentWidget::class )]
 class HelloPostController implements TurboControllerInterface {
+
+	public function __construct( private readonly CurrentWidget $current_widget ) {
+	}
 
 	public function __invoke( array $params, TurboFrame $frame ): Response {
 		return new Response(
-			'context=' . get_the_ID() . ' param=' . $params['post_id'],
+			'context=' . get_the_ID() . ' param=' . $params['post_id'] . ' widget=' . $this->current_widget->get_id(),
 			200,
 			[ 'Content-Type' => 'text/plain; charset=UTF-8' ]
 		);

@@ -49,7 +49,7 @@ class ControllerPassTest extends WP_UnitTestCase {
 		self::assertArrayHasKey( 'turbo_hello', $routes );
 		self::assertSame( '/_turbo/hello/{name}', $routes['turbo_hello']['path'] );
 		self::assertSame( HelloController::class, $routes['turbo_hello']['service'] );
-		self::assertSame( CurrentPost::class, $routes['turbo_hello']['context'] );
+		self::assertSame( [ CurrentPost::class ], $routes['turbo_hello']['contexts'] );
 		self::assertSame( [ 'GET' ], $routes['turbo_hello']['methods'] );
 	}
 

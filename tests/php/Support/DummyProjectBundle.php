@@ -42,6 +42,7 @@ class DummyProjectBundle extends AbstractBundle {
 		$container->services()
 			->set( HelloPostController::class )
 			->autoconfigure()
+			->autowire()
 			->public();
 	}
 }

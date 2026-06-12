@@ -1,0 +1,171 @@
+<?php
+/**
+ * Compiler pass that collects Turbo controllers into the route table.
+ *
+ * @package AchttienVijftien\Bundle\WpTurboBundle
+ */
+
+namespace AchttienVijftien\Bundle\WpTurboBundle\Compiler;
+
+use AchttienVijftien\Bundle\WpTurboBundle\Attribute\WithFrameContext;
+use AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\NullContext;
+use AchttienVijftien\Bundle\WpTurboBundle\Routing\Dispatcher;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Routing\Attribute\Route;
+
+/**
+ * Reads the #[Route] (and optional #[WithFrameContext]) attributes of every
+ * wp_turbo.controller tagged service (the autoconfigured tag for
+ * TurboControllerInterface implementations) into:
+ *
+ * - the `wp_turbo.routes` container parameter, the compile-time route table
+ *   the RouteRegistry matches and generates against, and
+ * - a class-keyed service locator of all controllers plus every referenced
+ *   FrameContext service, injected into the Dispatcher, so controllers stay
+ *   lazy and the Dispatcher depends on nothing it does not dispatch to.
+ *
+ * @package AchttienVijftien\Bundle\WpTurboBundle
+ */
+class ControllerPass implements CompilerPassInterface {
+
+	/**
+	 * Builds the route table and the Dispatcher's service locator.
+	 *
+	 * @param ContainerBuilder $container The container builder.
+	 *
+	 * @return void
+	 * @throws \InvalidArgumentException When a controller misses its #[Route] attribute or route
+	 *                                   name, declares a path outside /_turbo/, or reuses a name.
+	 */
+	public function process( ContainerBuilder $container ): void {
+		$routes   = [];
+		$services = [];
+
+		foreach ( $container->findTaggedServiceIds( 'wp_turbo.controller', true ) as $id => $attributes ) {
+			$definition = $container->getDefinition( $id );
+			$class      = $container->getParameterBag()->resolveValue( $definition->getClass() );
+
+			$route   = $this->read_route( $class );
+			$context = $this->read_context( $class );
+			$name    = $route->getName();
+
+			if ( isset( $routes[ $name ] ) ) {
+				throw new \InvalidArgumentException(
+					sprintf(
+						'Turbo route name "%s" is declared by both "%s" and "%s"; route names must be unique, they are the path()/url() lookup key.',
+						$name,
+						$routes[ $name ]['service'],
+						$class
+					)
+				);
+			}
+
+			$routes[ $name ] = [
+				'path'    => $route->getPath(),
+				'methods' => $route->getMethods(),
+				'service' => $class,
+				'context' => $context,
+			];
+
+			// Key by class: that is what the route table stores, and for
+			// autoconfigured services the id is the class name anyway.
+			$services[ $class ] = new Reference( $id );
+		}
+
+		$container->setParameter( 'wp_turbo.routes', $routes );
+
+		if ( ! $container->hasDefinition( Dispatcher::class ) ) {
+			return;
+		}
+
+		// The Dispatcher resolves contexts by class too; NullContext is the
+		// default for routes without #[WithFrameContext].
+		$contexts = array_unique( array_filter( array_column( $routes, 'context' ) ) );
+
+		foreach ( [ NullContext::class, ...$contexts ] as $context_class ) {
+			$services[ $context_class ] = new Reference( $context_class );
+		}
+
+		$container->getDefinition( Dispatcher::class )
+			->setArgument( '$services', ServiceLocatorTagPass::register( $container, $services ) );
+	}
+
+	/**
+	 * Reads the controller's #[Route] attribute (class first, __invoke as
+	 * fallback) and validates it.
+	 *
+	 * @param string $class The controller class name.
+	 *
+	 * @return Route
+	 * @throws \InvalidArgumentException When the attribute or its name is missing.
+	 */
+	private function read_route( string $class ): Route {
+		$reflection = new \ReflectionClass( $class );
+
+		$attributes = $reflection->getAttributes( Route::class, \ReflectionAttribute::IS_INSTANCEOF );
+
+		if ( ! $attributes && $reflection->hasMethod( '__invoke' ) ) {
+			$attributes = $reflection->getMethod( '__invoke' )
+				->getAttributes( Route::class, \ReflectionAttribute::IS_INSTANCEOF );
+		}
+
+		if ( ! $attributes ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Turbo controller "%s" must declare a #[Route] attribute on the class or its __invoke method.',
+					$class
+				)
+			);
+		}
+
+		$route = $attributes[0]->newInstance();
+
+		if ( null === $route->getName() || '' === $route->getName() ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'The #[Route] attribute of Turbo controller "%s" must declare a route name (name: \'...\'); it is the path()/url() lookup key.',
+					$class
+				)
+			);
+		}
+
+		if ( ! \is_string( $route->getPath() ) || '' === $route->getPath() ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'The #[Route] attribute of Turbo controller "%s" must declare a single string path.',
+					$class
+				)
+			);
+		}
+
+		// Only /_turbo/* is ceded to the Dispatcher by WpRewriteRegistrar's
+		// rewrite rule; a route outside it would compile but never dispatch.
+		if ( ! str_starts_with( $route->getPath(), '/_turbo/' ) ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'The #[Route] path "%s" of Turbo controller "%s" must start with "/_turbo/"; only that namespace reaches the Dispatcher.',
+					$route->getPath(),
+					$class
+				)
+			);
+		}
+
+		return $route;
+	}
+
+	/**
+	 * Reads the controller's optional #[WithFrameContext] attribute.
+	 *
+	 * @param string $class The controller class name.
+	 *
+	 * @return string|null The FrameContext class name, or null for the NullContext default.
+	 */
+	private function read_context( string $class ): ?string {
+		$attributes = ( new \ReflectionClass( $class ) )->getAttributes( WithFrameContext::class );
+
+		return $attributes ? $attributes[0]->newInstance()->context_class : null;
+	}
+}

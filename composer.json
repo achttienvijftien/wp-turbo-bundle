@@ -1,0 +1,52 @@
+{
+    "name": "achttienvijftien/wp-turbo-bundle",
+    "description": "Symfony UX Turbo (Frames + Streams) for WordPress, on the 1815 service container",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "1815",
+            "email": "it@1815.nl"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "achttienvijftien/service-container": "^1.2",
+        "achttienvijftien/wp-twig-bundle": "@dev",
+        "symfony/routing": "^6.4 || ^7.0",
+        "symfony/ux-turbo": "^2.13",
+        "symfony/ux-twig-component": "^2.13",
+        "symfony/yaml": "^6.4 || ^7.0",
+        "twig/twig": "^3.0"
+    },
+    "require-dev": {
+        "achttienvijftien/building-techniques": "^1.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "phpunit/phpunit": "^9.5",
+        "yoast/phpunit-polyfills": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "AchttienVijftien\\Bundle\\WpTurboBundle\\": "src/"
+        },
+        "files": [
+            "src/bootstrap.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AchttienVijftien\\Bundle\\WpTurboBundle\\Test\\": "tests/php/"
+        }
+    },
+    "scripts": {
+        "format": "phpcbf --report-summary --report-source",
+        "lint": "phpcs"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

@@ -1,0 +1,62 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    # Public so the kernel's tree-shaking keeps these reachable for the
+    # TwigBootstrapper, which resolves them at boot/render time.
+    public: true
+
+  # The twig service, twig.loader, adapters and bootstrapper come from
+  # achttienvijftien/wp-twig-bundle.
+
+  # Required by ux.twig_component.component_factory and
+  # ux.twig_component.component_properties (FrameworkBundle would normally
+  # define it).
+  property_accessor:
+    class: Symfony\Component\PropertyAccess\PropertyAccessor
+    factory: ['Symfony\Component\PropertyAccess\PropertyAccess', 'createPropertyAccessor']
+
+  event_dispatcher:
+    class: Symfony\Component\EventDispatcher\EventDispatcher
+
+  Symfony\Contracts\EventDispatcher\EventDispatcherInterface:
+    alias: event_dispatcher
+
+  Psr\EventDispatcher\EventDispatcherInterface:
+    alias: event_dispatcher
+
+  # Autoconfigured into the wp_twig.configurator tag via
+  # EnvironmentConfiguratorInterface (registered by wp-twig-bundle).
+  AchttienVijftien\Bundle\WpTurboBundle\Configurator\ComponentLexerConfigurator: ~
+
+  # Frame context resolvers; controllers declare one via #[WithFrameContext].
+  AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\NullContext: ~
+
+  AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentPost: ~
+
+  # The route table parameter is built by Compiler\ControllerPass.
+  AchttienVijftien\Bundle\WpTurboBundle\Routing\RouteRegistry:
+    arguments: ['%wp_turbo.routes%']
+
+  AchttienVijftien\Bundle\WpTurboBundle\Routing\WpRewriteRegistrar: ~
+
+  AchttienVijftien\Bundle\WpTurboBundle\Http\ResponseEmitter: ~
+
+  # $services (the class-keyed locator of controllers and frame contexts) is
+  # injected by Compiler\ControllerPass, like wp-twig-bundle's
+  # TwigRuntimeLocatorPass injects the TwigBootstrapper's $runtimes.
+  AchttienVijftien\Bundle\WpTurboBundle\Routing\Dispatcher: ~
+
+  # The standard contract consumed by wp-twig-bundle's conditional
+  # RoutingExtension (which backs Twig's path()/url()); any bundle may
+  # provide it.
+  Symfony\Component\Routing\Generator\UrlGeneratorInterface:
+    factory: ['@AchttienVijftien\Bundle\WpTurboBundle\Routing\RouteRegistry', 'get_generator']
+
+  # PHP render sites (widgets) build lazy frame placeholders through this
+  # helper; Twig render sites author <twig:Turbo:Frame> with path() instead.
+  AchttienVijftien\Bundle\WpTurboBundle\Frame\FramePlaceholder: ~
+
+  # The response-side counterpart: controllers wrap their fragment in the
+  # matching <turbo-frame> through this factory instead of inline markup.
+  AchttienVijftien\Bundle\WpTurboBundle\Frame\FrameResponseFactory: ~

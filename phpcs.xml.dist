@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards for wp-turbo-bundle">
+    <description>Sniffs for wp-turbo-bundle</description>
+
+    <!-- Use colors in output. -->
+    <arg name="colors"/>
+
+    <arg value="ps"/>
+
+    <arg name="extensions" value="php"/>
+
+    <file>./src</file>
+    <file>./tests</file>
+
+    <rule ref="1815BuildingTechniques"/>
+
+    <config name="testVersion" value="8.3-"/>
+    <rule ref="PHPCompatibilityWP" />
+</ruleset>

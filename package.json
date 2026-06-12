@@ -1,0 +1,15 @@
+{
+  "name": "@achttienvijftien/wp-turbo-bundle",
+  "description": "Symfony UX Turbo (Frames + Streams) for WordPress, on the 1815 service container",
+  "author": "1815 <it@1815.nl>",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "wp-env": "wp-env",
+    "test:php:unit": "wp-env run tests-cli --env-cwd=wp-content/plugins/wp-turbo-bundle vendor/bin/phpunit",
+    "test": "rm -rf var/cache && pnpm run test:php:unit"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^10.0.0"
+  }
+}

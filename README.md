@@ -11,9 +11,10 @@ on the container and contributes the UX-specific Twig environment setup (the
 namespaces, the Timber adapter) lives in `achttienvijftien/wp-twig-bundle`,
 which this package depends on.
 
-Self-invoking: requiring the package registers everything through composer
-`autoload.files` and the `achttienvijftien/container_bundles` filter. No
-activation, no config edits.
+Registers like a native Symfony bundle: list `WpTurboBundle` in the project's
+`config/bundles.php` (a Flex recipe writes that entry on `composer require`).
+The `symfony/ux-turbo` and `symfony/ux-twig-component` bundles register through
+their own official Symfony recipes, and `wp-twig-bundle` ships its own recipe.
 
 This is a pure-PHP bundle (`type: library`). The frontend carrier (webroot
 assets, the Turbo JS runtime, asset registration) is the

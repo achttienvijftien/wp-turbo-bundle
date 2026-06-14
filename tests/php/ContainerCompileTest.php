@@ -26,8 +26,9 @@ class ContainerCompileTest extends WP_UnitTestCase {
 
 		// This INVERTS the old assertArrayNotHasKey tripwire on purpose: the
 		// 'TwigBundle' key is no longer a parameter shim to be stripped but a
-		// REAL registered bundle (wp-twig-bundle's TwigBundle, whose short
-		// class name is load-bearing for ux-twig-component's check).
+		// REAL bundle registered via config/bundles.php (wp-twig-bundle's
+		// TwigBundle, whose short class name is load-bearing for
+		// ux-twig-component's check).
 		self::assertSame(
 			\AchttienVijftien\Bundle\WpTwigBundle\TwigBundle::class,
 			$bundles['TwigBundle'] ?? null

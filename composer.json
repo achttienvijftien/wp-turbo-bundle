@@ -29,10 +29,7 @@
     "autoload": {
         "psr-4": {
             "AchttienVijftien\\Bundle\\WpTurboBundle\\": "src/"
-        },
-        "files": [
-            "src/bootstrap.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -51,5 +48,10 @@
     },
     "suggest": {
         "achttienvijftien/wp-turbo": "Default Turbo runtime carrier: serves the JS and listens to wp_turbo/frame_placeholder"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
     }
 }

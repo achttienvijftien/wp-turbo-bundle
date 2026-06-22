@@ -48,8 +48,8 @@ class FramePlaceholder {
 	 *
 	 * @return string
 	 */
-	public function lazy( string $frame_id, string $route, array $params = [], array $attributes = [] ): string {
-		return $this->placeholder( 'lazy', $frame_id, $route, $params, $attributes );
+	public function lazy( string $frame_id, string $route, string $placeholder = '', array $params = [], array $attributes = [] ): string {
+		return $this->placeholder( 'lazy', $frame_id, $placeholder, $route, $params, $attributes );
 	}
 
 	/**
@@ -62,8 +62,8 @@ class FramePlaceholder {
 	 *
 	 * @return string
 	 */
-	public function eager( string $frame_id, string $route, array $params = [], array $attributes = [] ): string {
-		return $this->placeholder( 'eager', $frame_id, $route, $params, $attributes );
+	public function eager( string $frame_id, string $route, string $placeholder = '', array $params = [], array $attributes = [] ): string {
+		return $this->placeholder( 'eager', $frame_id, $placeholder, $route, $params, $attributes );
 	}
 
 	/**
@@ -77,7 +77,7 @@ class FramePlaceholder {
 	 *
 	 * @return string
 	 */
-	private function placeholder( string $loading, string $frame_id, string $route, array $params, array $attributes ): string {
+	private function placeholder( string $loading, string $frame_id, string $placeholder, string $route, array $params, array $attributes ): string {
 		// The runtime carrier is replaceable (the achttienvijftien/wp-turbo
 		// mu-plugin is the default, a theme bundle may take over later), so
 		// this package carries no script knowledge: whoever owns the Turbo
@@ -104,11 +104,12 @@ class FramePlaceholder {
 		}
 
 		return sprintf(
-			'<turbo-frame id="%s" src="%s" loading="%s"%s></turbo-frame>',
+			'<turbo-frame id="%s" src="%s" loading="%s"%s>%s</turbo-frame>',
 			esc_attr( $frame_id ),
 			esc_url( $this->registry->generate( $route, $params ) ),
 			esc_attr( $loading ),
-			$extra
+			$extra,
+			$placeholder
 		);
 	}
 }

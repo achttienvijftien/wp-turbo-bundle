@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5592cdd4f4f08e95ec345b714ef3bf57",
+    "content-hash": "25e87ad4d4cee00d68533c5dd581ed04",
     "packages": [
         {
             "name": "achttienvijftien/service-container",
@@ -56,10 +56,16 @@
         {
             "name": "achttienvijftien/wp-twig-bundle",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/achttienvijftien/wp-twig-bundle.git",
+                "reference": "3325d3294d0a7cafa480b4c2abe415bce3a0b654"
+            },
             "dist": {
-                "type": "path",
-                "url": "../wp-twig-bundle",
-                "reference": "4c3661b3205c57640f60357c8bc9d1d2946a1cc0"
+                "type": "zip",
+                "url": "https://api.github.com/repos/achttienvijftien/wp-twig-bundle/zipball/3325d3294d0a7cafa480b4c2abe415bce3a0b654",
+                "reference": "3325d3294d0a7cafa480b4c2abe415bce3a0b654",
+                "shasum": ""
             },
             "require": {
                 "achttienvijftien/service-container": "^1.2",
@@ -77,28 +83,19 @@
             "suggest": {
                 "timber/timber": "Host whose environment the TimberAdapter bridges"
             },
+            "default-branch": true,
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "AchttienVijftien\\Bundle\\WpTwigBundle\\": "src/"
-                },
-                "files": [
-                    "src/bootstrap.php"
-                ]
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "AchttienVijftien\\Bundle\\WpTwigBundle\\Test\\": "tests/php/"
                 }
             },
-            "scripts": {
-                "format": [
-                    "phpcbf --report-summary --report-source"
-                ],
-                "lint": [
-                    "phpcs"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0-or-later"
             ],
@@ -109,9 +106,11 @@
                 }
             ],
             "description": "Bridges a host-owned Twig environment (Timber, ...) into the 1815 service container as the twig service",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/achttienvijftien/wp-twig-bundle/issues",
+                "source": "https://github.com/achttienvijftien/wp-twig-bundle/tree/main"
+            },
+            "time": "2026-06-16T18:14:06+00:00"
         },
         {
             "name": "psr/container",
@@ -5123,5 +5122,5 @@
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

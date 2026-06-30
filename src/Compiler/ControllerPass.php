@@ -45,34 +45,37 @@ class ControllerPass implements CompilerPassInterface {
 		$services = [];
 
 		foreach ( $container->findTaggedServiceIds( 'wp_turbo.controller', true ) as $id => $attributes ) {
-			$definition = $container->getDefinition( $id );
-			$class      = $container->getParameterBag()->resolveValue( $definition->getClass() );
+			$definition      = $container->getDefinition( $id );
+			$class_reference = $container->getParameterBag()->resolveValue( $definition->getClass() );
 
-			$route    = $this->read_route( $class );
-			$contexts = $this->read_contexts( $class );
+			$route    = $this->read_route( $class_reference );
+			$contexts = $this->read_contexts( $class_reference );
 			$name     = $route->getName();
 
 			if ( isset( $routes[ $name ] ) ) {
+				// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				throw new \InvalidArgumentException(
 					sprintf(
+						// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 						'Turbo route name "%s" is declared by both "%s" and "%s"; route names must be unique, they are the path()/url() lookup key.',
 						$name,
 						$routes[ $name ]['service'],
-						$class
+						$class_reference
 					)
 				);
+				// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 
 			$routes[ $name ] = [
 				'path'     => $route->getPath(),
 				'methods'  => $route->getMethods(),
-				'service'  => $class,
+				'service'  => $class_reference,
 				'contexts' => $contexts,
 			];
 
-			// Key by class: that is what the route table stores, and for
-			// autoconfigured services the id is the class name anyway.
-			$services[ $class ] = new Reference( $id );
+			// Key by class_reference: that is what the route table stores, and for
+			// autoconfigured services the id is the class_reference name anyway.
+			$services[ $class_reference ] = new Reference( $id );
 		}
 
 		$container->setParameter( 'wp_turbo.routes', $routes );
@@ -81,7 +84,7 @@ class ControllerPass implements CompilerPassInterface {
 			return;
 		}
 
-		// The Dispatcher resolves contexts by class too; NullContext is the
+		// The Dispatcher resolves contexts by class_reference too; NullContext is the
 		// default for routes without #[WithFrameContext].
 		$contexts = array_unique( array_merge( ...array_column( $routes, 'contexts' ), ...[ [] ] ) );
 
@@ -97,13 +100,13 @@ class ControllerPass implements CompilerPassInterface {
 	 * Reads the controller's #[Route] attribute (class first, __invoke as
 	 * fallback) and validates it.
 	 *
-	 * @param string $class The controller class name.
+	 * @param string $class_reference The controller class name.
 	 *
 	 * @return Route
 	 * @throws \InvalidArgumentException When the attribute or its name is missing.
 	 */
-	private function read_route( string $class ): Route {
-		$reflection = new \ReflectionClass( $class );
+	private function read_route( string $class_reference ): Route {
+		$reflection = new \ReflectionClass( $class_reference );
 
 		$attributes = $reflection->getAttributes( Route::class, \ReflectionAttribute::IS_INSTANCEOF );
 
@@ -112,11 +115,12 @@ class ControllerPass implements CompilerPassInterface {
 				->getAttributes( Route::class, \ReflectionAttribute::IS_INSTANCEOF );
 		}
 
+		// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		if ( ! $attributes ) {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'Turbo controller "%s" must declare a #[Route] attribute on the class or its __invoke method.',
-					$class
+					$class_reference
 				)
 			);
 		}
@@ -126,8 +130,9 @@ class ControllerPass implements CompilerPassInterface {
 		if ( null === $route->getName() || '' === $route->getName() ) {
 			throw new \InvalidArgumentException(
 				sprintf(
+					// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 					'The #[Route] attribute of Turbo controller "%s" must declare a route name (name: \'...\'); it is the path()/url() lookup key.',
-					$class
+					$class_reference
 				)
 			);
 		}
@@ -136,7 +141,7 @@ class ControllerPass implements CompilerPassInterface {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'The #[Route] attribute of Turbo controller "%s" must declare a single string path.',
-					$class
+					$class_reference
 				)
 			);
 		}
@@ -146,12 +151,14 @@ class ControllerPass implements CompilerPassInterface {
 		if ( ! str_starts_with( $route->getPath(), '/_turbo/' ) ) {
 			throw new \InvalidArgumentException(
 				sprintf(
+					// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 					'The #[Route] path "%s" of Turbo controller "%s" must start with "/_turbo/"; only that namespace reaches the Dispatcher.',
 					$route->getPath(),
-					$class
+					$class_reference
 				)
 			);
 		}
+		// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 
 		return $route;
 	}
@@ -159,15 +166,15 @@ class ControllerPass implements CompilerPassInterface {
 	/**
 	 * Reads the controller's optional, repeatable #[WithFrameContext] attributes.
 	 *
-	 * @param string $class The controller class name.
+	 * @param string $class_reference The controller class name.
 	 *
 	 * @return string[] The FrameContext class names in declaration order; empty
 	 *                  means the NullContext default.
 	 */
-	private function read_contexts( string $class ): array {
+	private function read_contexts( string $class_reference ): array {
 		return array_map(
 			static fn ( \ReflectionAttribute $attribute ): string => $attribute->newInstance()->context_class,
-			( new \ReflectionClass( $class ) )->getAttributes( WithFrameContext::class )
+			( new \ReflectionClass( $class_reference ) )->getAttributes( WithFrameContext::class )
 		);
 	}
 }

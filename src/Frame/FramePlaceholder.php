@@ -43,8 +43,8 @@ class FramePlaceholder {
 	 *
 	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
 	 * @param string $route       The route name.
-	 * @param string $placeholder The placeholder content.
 	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
 	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
@@ -52,11 +52,11 @@ class FramePlaceholder {
 	public function lazy(
 		string $frame_id,
 		string $route,
-		string $placeholder = '',
 		array $params = [],
+		string $placeholder = '',
 		array $attributes = []
 	): string {
-		return $this->placeholder( 'lazy', $frame_id, $placeholder, $route, $params, $attributes );
+		return $this->placeholder( 'lazy', $frame_id, $route, $params, $placeholder, $attributes );
 	}
 
 	/**
@@ -64,8 +64,8 @@ class FramePlaceholder {
 	 *
 	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
 	 * @param string $route       The route name.
-	 * @param string $placeholder The placeholder content.
 	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
 	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
@@ -73,11 +73,11 @@ class FramePlaceholder {
 	public function eager(
 		string $frame_id,
 		string $route,
-		string $placeholder = '',
 		array $params = [],
+		string $placeholder = '',
 		array $attributes = []
 	): string {
-		return $this->placeholder( 'eager', $frame_id, $placeholder, $route, $params, $attributes );
+		return $this->placeholder( 'eager', $frame_id, $route, $params, $placeholder, $attributes );
 	}
 
 	/**
@@ -85,9 +85,9 @@ class FramePlaceholder {
 	 *
 	 * @param string $loading     The Turbo loading mode ('lazy' or 'eager').
 	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
-	 * @param string $placeholder The placeholder content.
 	 * @param string $route       The route name.
 	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
 	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
@@ -95,9 +95,9 @@ class FramePlaceholder {
 	private function placeholder(
 		string $loading,
 		string $frame_id,
-		string $placeholder,
 		string $route,
 		array $params,
+		string $placeholder,
 		array $attributes
 	): string {
 		// The runtime carrier is replaceable (the achttienvijftien/wp-turbo

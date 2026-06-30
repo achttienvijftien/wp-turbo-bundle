@@ -29,6 +29,8 @@ class CurrentWidget implements FrameContext {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws NotFoundException thrown if widget was not found or not placed in active sidebar.
 	 */
 	public function setup( array $params ): void {
 		$widget_id = (string) ( $params['widget_id'] ?? '' );
@@ -48,6 +50,7 @@ class CurrentWidget implements FrameContext {
 	 */
 	public function get_id(): string {
 		if ( null === $this->widget_id ) {
+			// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 			throw new \LogicException( 'No widget id captured; CurrentWidget::setup() runs first (declare it via #[WithFrameContext]).' );
 		}
 

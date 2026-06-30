@@ -41,43 +41,65 @@ class FramePlaceholder {
 	 * CSS dimensions; an empty frame is a 0x0 inline element and never
 	 * triggers. Use eager() until a fallback gives the frame a box.
 	 *
-	 * @param string $frame_id   The frame id the endpoint's response frame must echo.
-	 * @param string $route      The route name.
-	 * @param array  $params     Route placeholder values; extras become query parameters.
-	 * @param array  $attributes Extra HTML attributes as key => value pairs.
+	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
+	 * @param string $route       The route name.
+	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
+	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
 	 */
-	public function lazy( string $frame_id, string $route, array $params = [], array $attributes = [] ): string {
-		return $this->placeholder( 'lazy', $frame_id, $route, $params, $attributes );
+	public function lazy(
+		string $frame_id,
+		string $route,
+		array $params = [],
+		string $placeholder = '',
+		array $attributes = []
+	): string {
+		return $this->placeholder( 'lazy', $frame_id, $route, $params, $placeholder, $attributes );
 	}
 
 	/**
 	 * Renders an eager placeholder: Turbo fetches as soon as the page loads.
 	 *
-	 * @param string $frame_id   The frame id the endpoint's response frame must echo.
-	 * @param string $route      The route name.
-	 * @param array  $params     Route placeholder values; extras become query parameters.
-	 * @param array  $attributes Extra HTML attributes as key => value pairs.
+	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
+	 * @param string $route       The route name.
+	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
+	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
 	 */
-	public function eager( string $frame_id, string $route, array $params = [], array $attributes = [] ): string {
-		return $this->placeholder( 'eager', $frame_id, $route, $params, $attributes );
+	public function eager(
+		string $frame_id,
+		string $route,
+		array $params = [],
+		string $placeholder = '',
+		array $attributes = []
+	): string {
+		return $this->placeholder( 'eager', $frame_id, $route, $params, $placeholder, $attributes );
 	}
 
 	/**
 	 * Builds the placeholder markup.
 	 *
-	 * @param string $loading    The Turbo loading mode ('lazy' or 'eager').
-	 * @param string $frame_id   The frame id the endpoint's response frame must echo.
-	 * @param string $route      The route name.
-	 * @param array  $params     Route placeholder values; extras become query parameters.
-	 * @param array  $attributes Extra HTML attributes as key => value pairs.
+	 * @param string $loading     The Turbo loading mode ('lazy' or 'eager').
+	 * @param string $frame_id    The frame id the endpoint's response frame must echo.
+	 * @param string $route       The route name.
+	 * @param array  $params      Route placeholder values; extras become query parameters.
+	 * @param string $placeholder The placeholder content.
+	 * @param array  $attributes  Extra HTML attributes as key => value pairs.
 	 *
 	 * @return string
 	 */
-	private function placeholder( string $loading, string $frame_id, string $route, array $params, array $attributes ): string {
+	private function placeholder(
+		string $loading,
+		string $frame_id,
+		string $route,
+		array $params,
+		string $placeholder,
+		array $attributes
+	): string {
 		// The runtime carrier is replaceable (the achttienvijftien/wp-turbo
 		// mu-plugin is the default, a theme bundle may take over later), so
 		// this package carries no script knowledge: whoever owns the Turbo
@@ -85,6 +107,7 @@ class FramePlaceholder {
 		if ( ! has_action( 'wp_turbo/frame_placeholder' ) ) {
 			_doing_it_wrong(
 				__METHOD__,
+				// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 				'A Turbo Frame placeholder was rendered but nothing is listening to wp_turbo/frame_placeholder, so no Turbo runtime will be enqueued and the frame will never load. Install achttienvijftien/wp-turbo or register your own runtime listener.',
 				'0.1.0'
 			);
@@ -104,11 +127,12 @@ class FramePlaceholder {
 		}
 
 		return sprintf(
-			'<turbo-frame id="%s" src="%s" loading="%s"%s></turbo-frame>',
+			'<turbo-frame id="%s" src="%s" loading="%s"%s>%s</turbo-frame>',
 			esc_attr( $frame_id ),
 			esc_url( $this->registry->generate( $route, $params ) ),
 			esc_attr( $loading ),
-			$extra
+			$extra,
+			$placeholder
 		);
 	}
 }

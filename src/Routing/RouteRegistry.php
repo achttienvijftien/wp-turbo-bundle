@@ -68,6 +68,7 @@ class RouteRegistry {
 			// to the post-decode value.
 			$matched = $matcher->match( $path );
 		} catch ( ResourceNotFoundException | MethodNotAllowedException $exception ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new NotFoundException( sprintf( 'No Turbo route matches "%s".', $path ), 0, $exception );
 		}
 
@@ -75,9 +76,9 @@ class RouteRegistry {
 		unset( $matched['_route'] );
 
 		return [
-			'name'    => $name,
-			'params'  => $matched,
-			'service' => $this->routes[ $name ]['service'],
+			'name'     => $name,
+			'params'   => $matched,
+			'service'  => $this->routes[ $name ]['service'],
 			'contexts' => $this->routes[ $name ]['contexts'],
 		];
 	}

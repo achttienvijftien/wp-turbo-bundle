@@ -20,6 +20,8 @@ class CurrentPost implements FrameContext {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws NotFoundException thrown if post was not found or is not publicly viewable.
 	 */
 	public function setup( array $params ): void {
 		$post_id = (int) ( $params['post_id'] ?? 0 );

@@ -3,7 +3,6 @@
   "port": 8930,
   "testsPort": 8931,
   "mappings": {
-    "wp-content/plugins/wp-turbo-bundle": ".",
-    "wp-content/plugins/wp-turbo-bundle/vendor/achttienvijftien/wp-twig-bundle": "../wp-twig-bundle"
+    "wp-content/plugins/wp-turbo-bundle": "."
   }
 }

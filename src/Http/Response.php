@@ -12,8 +12,8 @@ namespace AchttienVijftien\Bundle\WpTurboBundle\Http;
  * ResponseEmitter. Deliberately minimal: body, status, headers, attributes.
  *
  * Attributes are an opaque metadata bag: the bundle stores and passes them
- * through but never reads them. Conventions such as a `cache_tags` key are
- * agreed on by the consumers (theme + plugin), not by this class.
+ * through but never reads them. Conventions for specific keys are agreed on
+ * by the consumers (theme + plugin), not by this class.
  *
  * @package AchttienVijftien\Bundle\WpTurboBundle
  */

@@ -25,7 +25,7 @@ class FrameResponseFactory {
 	 * @param string $frame_id   The frame id, matching the placeholder's.
 	 * @param string $content    The rendered fragment (already escaped where needed).
 	 * @param array  $headers    Extra headers; Content-Type defaults to HTML.
-	 * @param array  $attributes Opaque response metadata (e.g. a `cache_tags` key); passed through untouched.
+	 * @param array  $attributes Opaque response metadata; passed through untouched.
 	 *
 	 * @return Response
 	 */

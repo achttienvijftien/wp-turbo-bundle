@@ -113,9 +113,8 @@ by frame id, so the response frame must echo the placeholder's id).
 carried on the `Response` (the bundle stores it but never reads it). At emit
 time the bundle fires `wp_turbo/send_headers` (the Turbo analog of WordPress's
 `send_headers`), after the response's own headers are queued and before the
-body, so a listener can inspect the `Response` and emit further headers. The
-`cache_tags` key is a convention agreed on by consumers (e.g. a theme bridge
-turning tags into `Cache-Tag` headers), not bundle API.
+body, so a listener can inspect the `Response` and emit further headers.
+Specific attribute keys are conventions agreed on by consumers, not bundle API.
 
 ## Planned
 

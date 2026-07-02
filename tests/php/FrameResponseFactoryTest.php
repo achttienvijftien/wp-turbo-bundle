@@ -37,4 +37,22 @@ class FrameResponseFactoryTest extends WP_UnitTestCase {
 
 		self::assertInstanceOf( FrameResponseFactory::class, $container->get( FrameResponseFactory::class ) );
 	}
+
+	public function test_attributes_pass_through_to_the_response(): void {
+		$response = ( new FrameResponseFactory() )->frame(
+			'author-footer',
+			'x',
+			[],
+			[ 'cache_tags' => [ 'author-7' ] ]
+		);
+
+		self::assertSame( [ 'cache_tags' => [ 'author-7' ] ], $response->get_attributes() );
+		self::assertSame( [ 'author-7' ], $response->get_attribute( 'cache_tags' ) );
+	}
+
+	public function test_attributes_default_to_empty(): void {
+		$response = ( new FrameResponseFactory() )->frame( 'author-footer', 'x' );
+
+		self::assertSame( [], $response->get_attributes() );
+	}
 }

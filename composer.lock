@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25e87ad4d4cee00d68533c5dd581ed04",
+    "content-hash": "22a23572c244d7d8307c2e0e986cde51",
     "packages": [
         {
             "name": "achttienvijftien/service-container",
@@ -55,16 +55,16 @@
         },
         {
             "name": "achttienvijftien/wp-twig-bundle",
-            "version": "dev-main",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/achttienvijftien/wp-twig-bundle.git",
-                "reference": "3325d3294d0a7cafa480b4c2abe415bce3a0b654"
+                "reference": "473083152c8b2c928d2804aa773b27fa2077789f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/achttienvijftien/wp-twig-bundle/zipball/3325d3294d0a7cafa480b4c2abe415bce3a0b654",
-                "reference": "3325d3294d0a7cafa480b4c2abe415bce3a0b654",
+                "url": "https://api.github.com/repos/achttienvijftien/wp-twig-bundle/zipball/473083152c8b2c928d2804aa773b27fa2077789f",
+                "reference": "473083152c8b2c928d2804aa773b27fa2077789f",
                 "shasum": ""
             },
             "require": {
@@ -83,7 +83,6 @@
             "suggest": {
                 "timber/timber": "Host whose environment the TimberAdapter bridges"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -108,9 +107,9 @@
             "description": "Bridges a host-owned Twig environment (Timber, ...) into the 1815 service container as the twig service",
             "support": {
                 "issues": "https://github.com/achttienvijftien/wp-twig-bundle/issues",
-                "source": "https://github.com/achttienvijftien/wp-twig-bundle/tree/main"
+                "source": "https://github.com/achttienvijftien/wp-twig-bundle/tree/1.0.1"
             },
-            "time": "2026-06-16T18:14:06+00:00"
+            "time": "2026-07-03T10:53:21+00:00"
         },
         {
             "name": "psr/container",
@@ -5113,14 +5112,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "achttienvijftien/wp-twig-bundle": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-05
+
+### Added
+
+- Added option to render placeholder content inside turbo-frame placeholders
+
 ## [1.0.0] - 2026-07-05
 
 First release
 
 
-[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.0.0...main
+[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.1.0...main
+
+[1.0.1]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.0.0...1.1.0
 
 [1.0.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/e1f2f270d4c3cab632b255918870ced63cdf225f...1.0.0

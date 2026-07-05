@@ -60,7 +60,7 @@ class FramePlaceholderTest extends WP_UnitTestCase {
 			'latest-news',
 			'turbo_hello',
 			[ 'name' => 'x' ],
-			[
+			attributes: [
 				'target'  => '_top',
 				'id'      => 'override',
 				'src'     => 'https://evil.example/override',

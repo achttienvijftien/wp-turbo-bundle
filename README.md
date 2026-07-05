@@ -73,8 +73,17 @@ class AuthorFooterController implements TurboControllerInterface {
 PHP render sites (widgets) use the `FramePlaceholder` service:
 
 ```php
-echo $this->frame_placeholder->eager( 'author-footer', 'turbo_author_footer', [ 'post_id' => $post_id ] );
+echo $this->frame_placeholder->eager(
+	frame_id: 'author-footer',
+	route: 'turbo_author_footer',
+	params: [ 'post_id' => $post_id ]
+);
 ```
+
+Use named arguments: the optional `params:`, `placeholder:` and
+`attributes:` arguments are then addressable by name, so you can skip the
+ones you don't need (here `placeholder:`) instead of threading positional
+defaults through.
 
 `lazy()` exists too, but a lazy frame only loads once the element occupies
 space: an empty frame is a 0x0 inline element that never triggers

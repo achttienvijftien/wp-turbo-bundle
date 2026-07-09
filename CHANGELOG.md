@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-09
+
+### Added
+
+- Added ability to enhance frame responses with arbitrary attributes
+- Added action hook triggered immediately after sending frame response headers
+
 ## [1.1.0] - 2026-07-05
 
 ### Added
@@ -17,9 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 First release
 
+[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.2.0...main
 
-[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.1.0...main
+[1.2.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.1.0...1.2.0
 
-[1.0.1]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.0.0...1.1.0
+[1.1.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.0.0...1.1.0
 
 [1.0.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/e1f2f270d4c3cab632b255918870ced63cdf225f...1.0.0

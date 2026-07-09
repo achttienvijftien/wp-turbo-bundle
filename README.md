@@ -118,6 +118,13 @@ Note: the Stream components take a `target` prop (a full CSS selector, e.g.
 Controllers wrap their fragment through `FrameResponseFactory` (Turbo swaps
 by frame id, so the response frame must echo the placeholder's id).
 
+`frame()` also takes an optional `attributes` array — an opaque metadata bag
+carried on the `Response` (the bundle stores it but never reads it). At emit
+time the bundle fires `wp_turbo/send_headers` (the Turbo analog of WordPress's
+`send_headers`), after the response's own headers are queued and before the
+body, so a listener can inspect the `Response` and emit further headers.
+Specific attribute keys are conventions agreed on by consumers, not bundle API.
+
 ## Planned
 
 A stream response helper for `<twig:Turbo:Stream:*>` endpoints.

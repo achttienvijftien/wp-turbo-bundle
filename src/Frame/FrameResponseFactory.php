@@ -22,19 +22,21 @@ class FrameResponseFactory {
 	/**
 	 * Wraps rendered content in its Turbo Frame.
 	 *
-	 * @param string $frame_id The frame id, matching the placeholder's.
-	 * @param string $content  The rendered fragment (already escaped where needed).
-	 * @param array  $headers  Extra headers; Content-Type defaults to HTML.
+	 * @param string $frame_id   The frame id, matching the placeholder's.
+	 * @param string $content    The rendered fragment (already escaped where needed).
+	 * @param array  $headers    Extra headers; Content-Type defaults to HTML.
+	 * @param array  $attributes Opaque response metadata; passed through untouched.
 	 *
 	 * @return Response
 	 */
-	public function frame( string $frame_id, string $content, array $headers = [] ): Response {
+	public function frame( string $frame_id, string $content, array $headers = [], array $attributes = [] ): Response {
 		$headers += [ 'Content-Type' => 'text/html; charset=UTF-8' ];
 
 		return new Response(
 			'<turbo-frame id="' . esc_attr( $frame_id ) . '">' . $content . '</turbo-frame>',
 			200,
-			$headers
+			$headers,
+			$attributes
 		);
 	}
 }

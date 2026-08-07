@@ -58,6 +58,41 @@ class CurrentWidget implements FrameContext {
 	}
 
 	/**
+	 * Resolves the block matching $block_name inside the widget's stored content.
+	 *
+	 * @param string $block_name The block name to match, e.g. acf/recent-posts.
+	 *
+	 * @return array|null
+	 */
+	public function find_block( string $block_name ): ?array {
+		$widget_id = $this->get_id();
+
+		if ( ! str_starts_with( $widget_id, 'block-' ) ) {
+			return null;
+		}
+
+		$number   = (int) substr( $widget_id, strlen( 'block-' ) );
+		$instance = get_option( 'widget_block', [] )[ $number ] ?? null;
+		$content  = is_array( $instance ) ? (string) ( $instance['content'] ?? '' ) : '';
+
+		if ( '' === $content ) {
+			return null;
+		}
+
+		// A block widget holds one block; whitespace yields entries with a null
+		// blockName, so the first named entry is that block.
+		foreach ( parse_blocks( $content ) as $block ) {
+			if ( empty( $block['blockName'] ) ) {
+				continue;
+			}
+
+			return $block['blockName'] === $block_name ? $block : null;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Whether the widget id is placed in an active sidebar.
 	 *
 	 * @param string $widget_id The widget id (e.g. rmg_widget_author_footer-2).

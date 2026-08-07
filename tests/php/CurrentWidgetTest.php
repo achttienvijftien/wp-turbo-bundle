@@ -44,4 +44,52 @@ class CurrentWidgetTest extends WP_UnitTestCase {
 
 		( new CurrentWidget() )->get_id();
 	}
+
+	public function test_find_block_returns_the_matching_block(): void {
+		update_option( 'sidebars_widgets', [ 'sidebar-test' => [ 'block-2' ] ] );
+		update_option(
+			'widget_block',
+			[ 2 => [ 'content' => '<!-- wp:acf/recent-posts /-->' ] ]
+		);
+
+		$context = new CurrentWidget();
+		$context->setup( [ 'widget_id' => 'block-2' ] );
+
+		$block = $context->find_block( 'acf/recent-posts' );
+
+		self::assertNotNull( $block );
+		self::assertSame( 'acf/recent-posts', $block['blockName'] );
+	}
+
+	public function test_find_block_returns_null_for_a_name_mismatch(): void {
+		update_option( 'sidebars_widgets', [ 'sidebar-test' => [ 'block-2' ] ] );
+		update_option(
+			'widget_block',
+			[ 2 => [ 'content' => '<!-- wp:acf/most-read /-->' ] ]
+		);
+
+		$context = new CurrentWidget();
+		$context->setup( [ 'widget_id' => 'block-2' ] );
+
+		self::assertNull( $context->find_block( 'acf/recent-posts' ) );
+	}
+
+	public function test_find_block_returns_null_for_a_non_block_widget_id(): void {
+		update_option( 'sidebars_widgets', [ 'sidebar-test' => [ 'rmg_widget_mostread-4' ] ] );
+
+		$context = new CurrentWidget();
+		$context->setup( [ 'widget_id' => 'rmg_widget_mostread-4' ] );
+
+		self::assertNull( $context->find_block( 'acf/recent-posts' ) );
+	}
+
+	public function test_find_block_returns_null_for_an_unknown_instance(): void {
+		update_option( 'sidebars_widgets', [ 'sidebar-test' => [ 'block-2' ] ] );
+		update_option( 'widget_block', [] );
+
+		$context = new CurrentWidget();
+		$context->setup( [ 'widget_id' => 'block-2' ] );
+
+		self::assertNull( $context->find_block( 'acf/recent-posts' ) );
+	}
 }

@@ -21,11 +21,46 @@ use AchttienVijftien\Bundle\WpTurboBundle\Http\NotFoundException;
 class CurrentWidget implements FrameContext {
 
 	/**
+	 * Widget type of a block widget: its settings live in its block markup.
+	 *
+	 * @var string
+	 */
+	public const string TYPE_BLOCK = 'block';
+
+	/**
+	 * Widget type of a classic widget: its settings live in its instance option.
+	 *
+	 * @var string
+	 */
+	public const string TYPE_LEGACY = 'legacy';
+
+	/**
+	 * Id prefix WordPress gives every block widget instance.
+	 *
+	 * @var string
+	 */
+	private const string BLOCK_ID_PREFIX = 'block-';
+
+	/**
 	 * The validated widget id for the current request.
 	 *
 	 * @var string|null
 	 */
 	private ?string $widget_id = null;
+
+	/**
+	 * The widget's own block, once resolved.
+	 *
+	 * @var array|null
+	 */
+	private ?array $block = null;
+
+	/**
+	 * Whether the block was resolved, telling an absent block from an unresolved one.
+	 *
+	 * @var bool
+	 */
+	private bool $block_resolved = false;
 
 	/**
 	 * {@inheritDoc}
@@ -39,7 +74,9 @@ class CurrentWidget implements FrameContext {
 			throw new NotFoundException( 'Widget not found or not placed in an active sidebar.' );
 		}
 
-		$this->widget_id = $widget_id;
+		$this->widget_id      = $widget_id;
+		$this->block          = null;
+		$this->block_resolved = false;
 	}
 
 	/**
@@ -58,20 +95,43 @@ class CurrentWidget implements FrameContext {
 	}
 
 	/**
-	 * Resolves the block matching $block_name inside the widget's stored content.
+	 * Returns where the widget keeps its settings: TYPE_BLOCK or TYPE_LEGACY.
 	 *
-	 * @param string $block_name The block name to match, e.g. acf/recent-posts.
+	 * @return string
+	 * @throws \LogicException When called before setup() validated a request.
+	 */
+	public function get_type(): string {
+		return str_starts_with( $this->get_id(), self::BLOCK_ID_PREFIX ) ? self::TYPE_BLOCK : self::TYPE_LEGACY;
+	}
+
+	/**
+	 * Returns the block the widget holds, resolved once per request.
 	 *
 	 * @return array|null
+	 * @throws \LogicException When called before setup() validated a request.
 	 */
-	public function find_block( string $block_name ): ?array {
-		$widget_id = $this->get_id();
+	public function get_block(): ?array {
+		if ( ! $this->block_resolved ) {
+			// Memoized: parse_blocks() is expensive and the instance serves one request.
+			$this->block          = $this->resolve_block();
+			$this->block_resolved = true;
+		}
 
-		if ( ! str_starts_with( $widget_id, 'block-' ) ) {
+		return $this->block;
+	}
+
+	/**
+	 * Reads the widget's stored content and parses out the block it holds.
+	 *
+	 * @return array|null
+	 * @throws \LogicException When called before setup() validated a request.
+	 */
+	private function resolve_block(): ?array {
+		if ( self::TYPE_BLOCK !== $this->get_type() ) {
 			return null;
 		}
 
-		$number   = (int) substr( $widget_id, strlen( 'block-' ) );
+		$number   = (int) substr( $this->get_id(), strlen( self::BLOCK_ID_PREFIX ) );
 		$instance = get_option( 'widget_block', [] )[ $number ] ?? null;
 		$content  = is_array( $instance ) ? (string) ( $instance['content'] ?? '' ) : '';
 
@@ -86,7 +146,7 @@ class CurrentWidget implements FrameContext {
 				continue;
 			}
 
-			return $block['blockName'] === $block_name ? $block : null;
+			return $block;
 		}
 
 		return null;

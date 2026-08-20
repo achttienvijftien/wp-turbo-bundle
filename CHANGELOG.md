@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- CurrentWidget::find_block() to resolve a block widget's named block
+- CurrentWidget::get_block() to resolve the block a block widget holds
+- CurrentWidget::get_type() to tell a block widget from a legacy one
 
 ## [1.2.0] - 2026-07-09
 

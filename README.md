@@ -63,6 +63,11 @@ class AuthorFooterController implements TurboControllerInterface {
   actively placed sidebar widgets), or your own implementation. Unknown
   routes, non-public posts and unplaced widgets get a controlled
   `text/plain` 404.
+- `CurrentWidget` also exposes the widget's own configuration: `get_type()`
+  tells a block widget (`TYPE_BLOCK`) from a classic one (`TYPE_LEGACY`), and
+  `get_block()` returns the block a block widget holds (parsed once per
+  request), so a controller reads settings from block attributes or from the
+  legacy instance option as appropriate.
 - The dispatcher only answers requests whose real path lies under
   `/_turbo/`, enforces the declared methods, and merges matched path
   placeholders over query parameters (placeholders win) for contexts and

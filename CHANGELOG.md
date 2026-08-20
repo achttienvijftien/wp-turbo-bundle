@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-20
+
 ### Added
 
 - CurrentWidget::get_block() to resolve the block a block widget holds
@@ -29,7 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 First release
 
-[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.2.0...main
+[unreleased]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.3.0...main
+
+[1.3.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.2.0...1.3.0
 
 [1.2.0]: https://github.com/achttienvijftien/wp-turbo-bundle/compare/1.1.0...1.2.0
 

@@ -10,6 +10,6 @@
     "test": "rm -rf var/cache && pnpm run test:php:unit"
   },
   "devDependencies": {
-    "@wordpress/env": "^10.0.0"
+    "@wordpress/env": "^10.39.0"
   }
 }

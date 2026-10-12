@@ -7,6 +7,7 @@ use AchttienVijftien\Bundle\WpTurboBundle\Frame\Context\CurrentPost;
 use AchttienVijftien\Bundle\WpTurboBundle\Test\Support\BadPathController;
 use AchttienVijftien\Bundle\WpTurboBundle\Test\Support\DuplicateRouteNameController;
 use AchttienVijftien\Bundle\WpTurboBundle\Test\Support\HelloController;
+use AchttienVijftien\Bundle\WpTurboBundle\Test\Support\LocalizedPathController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use WP_UnitTestCase;
 
@@ -69,6 +70,15 @@ class ControllerPassTest extends WP_UnitTestCase {
 
 		$this->expectException( \InvalidArgumentException::class );
 		$this->expectExceptionMessageMatches( '/_turbo/' );
+
+		( new ControllerPass() )->process( $builder );
+	}
+
+	public function test_localized_paths_fail_the_compile(): void {
+		$builder = $this->builder_with_controllers( LocalizedPathController::class );
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessageMatches( '/single string path/' );
 
 		( new ControllerPass() )->process( $builder );
 	}

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed symfony/routing 7.4 deprecation notices raised by ControllerPass reading the #[Route] attribute through its getters
+
 ## [1.3.0] - 2026-09-04
 
 ### Added

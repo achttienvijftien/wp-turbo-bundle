@@ -50,7 +50,7 @@ class ControllerPass implements CompilerPassInterface {
 
 			$route    = $this->read_route( $class_reference );
 			$contexts = $this->read_contexts( $class_reference );
-			$name     = $route->getName();
+			$name     = $route['name'];
 
 			if ( isset( $routes[ $name ] ) ) {
 				// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped
@@ -67,8 +67,8 @@ class ControllerPass implements CompilerPassInterface {
 			}
 
 			$routes[ $name ] = [
-				'path'     => $route->getPath(),
-				'methods'  => $route->getMethods(),
+				'path'     => $route['path'],
+				'methods'  => $route['methods'],
 				'service'  => $class_reference,
 				'contexts' => $contexts,
 			];
@@ -102,10 +102,10 @@ class ControllerPass implements CompilerPassInterface {
 	 *
 	 * @param string $class_reference The controller class name.
 	 *
-	 * @return Route
+	 * @return array{name: string, path: string, methods: string[]}
 	 * @throws \InvalidArgumentException When the attribute or its name is missing.
 	 */
-	private function read_route( string $class_reference ): Route {
+	private function read_route( string $class_reference ): array {
 		$reflection = new \ReflectionClass( $class_reference );
 
 		$attributes = $reflection->getAttributes( Route::class, \ReflectionAttribute::IS_INSTANCEOF );
@@ -125,9 +125,23 @@ class ControllerPass implements CompilerPassInterface {
 			);
 		}
 
-		$route = $attributes[0]->newInstance();
+		$attribute = $attributes[0]->newInstance();
 
-		if ( null === $route->getName() || '' === $route->getName() ) {
+		// symfony/routing 7.4 made the attribute's properties public and deprecated
+		// its getters; before 7.4 the properties are private and only getters exist.
+		$route = ( new \ReflectionProperty( Route::class, 'name' ) )->isPublic()
+			? [
+				'name'    => $attribute->name,
+				'path'    => $attribute->path,
+				'methods' => $attribute->methods,
+			]
+			: [
+				'name'    => $attribute->getName(),
+				'path'    => $attribute->getPath(),
+				'methods' => $attribute->getMethods(),
+			];
+
+		if ( null === $route['name'] || '' === $route['name'] ) {
 			throw new \InvalidArgumentException(
 				sprintf(
 					// phpcs:ignore Generic.Files.LineLength.MaxExceeded
@@ -137,7 +151,8 @@ class ControllerPass implements CompilerPassInterface {
 			);
 		}
 
-		if ( ! \is_string( $route->getPath() ) || '' === $route->getPath() ) {
+		// A localized path is an array (7.4+) or null (getPath() before 7.4).
+		if ( ! \is_string( $route['path'] ) || '' === $route['path'] ) {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'The #[Route] attribute of Turbo controller "%s" must declare a single string path.',
@@ -148,12 +163,12 @@ class ControllerPass implements CompilerPassInterface {
 
 		// Only /_turbo/* is ceded to the Dispatcher by WpRewriteRegistrar's
 		// rewrite rule; a route outside it would compile but never dispatch.
-		if ( ! str_starts_with( $route->getPath(), '/_turbo/' ) ) {
+		if ( ! str_starts_with( $route['path'], '/_turbo/' ) ) {
 			throw new \InvalidArgumentException(
 				sprintf(
 					// phpcs:ignore Generic.Files.LineLength.MaxExceeded
 					'The #[Route] path "%s" of Turbo controller "%s" must start with "/_turbo/"; only that namespace reaches the Dispatcher.',
-					$route->getPath(),
+					$route['path'],
 					$class_reference
 				)
 			);
